@@ -1,1 +1,3 @@
 sec.py
+__py*
+.idea*
