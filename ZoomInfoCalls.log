@@ -1,0 +1,24 @@
+2016-12-22 10:36:34,396 {"CompanyDetailRequest": {"ErrorMessage": "Permission denied to use this API."}}
+2016-12-22 10:36:34,396 {"CompanyDetailRequest": {"ErrorMessage": "Permission denied to use this API."}}
+2016-12-22 10:36:34,396 {"CompanyDetailRequest": {"ErrorMessage": "Permission denied to use this API."}}
+2016-12-22 10:39:32,242 {"CompanyDetailRequest": {"ErrorMessage": "Permission denied to use this API."}}
+2016-12-22 10:44:37,495 {"CompanyDetailRequest": {"ErrorMessage": "Permission denied to use this API."}}
+2016-12-22 10:44:37,495 {"CompanyDetailRequest": {"ErrorMessage": "Permission denied to use this API."}}
+2016-12-22 10:44:37,496 {"CompanyDetailRequest": {"ErrorMessage": "Permission denied to use this API."}}
+2016-12-22 13:58:12,899 Started
+2016-12-22 13:58:13,347 Accounts to be run: 2
+2016-12-22 13:58:13,729 Contacts to be run: 1
+2016-12-22 13:58:13,730 Finished getting info from ZoomInfo
+2016-12-22 13:58:13,732 Starting sfdc update
+2016-12-22 13:58:53,900 Started
+2016-12-22 13:58:54,333 Accounts to be run: 2
+2016-12-22 13:58:54,601 Contacts to be run: 1
+2016-12-22 13:58:54,602 Finished getting info from ZoomInfo
+2016-12-22 13:58:54,603 Starting sfdc update
+2016-12-22 13:58:56,736 Success
+2016-12-22 14:32:31,328 Started
+2016-12-22 14:32:31,797 Accounts to be run: 3
+2016-12-22 14:32:32,052 Contacts to be run: 0
+2016-12-22 14:32:32,052 Finished getting info from ZoomInfo
+2016-12-22 14:32:32,055 Starting sfdc update
+2016-12-22 14:32:33,941 Success

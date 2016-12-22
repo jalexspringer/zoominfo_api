@@ -4,6 +4,7 @@
 
 import datetime as dt
 import hashlib as hl
+import logging
 
 import requests
 
@@ -16,7 +17,7 @@ class ZoomInfo(object):
     See: http://www.zoominfo.com/business/zoominfo-new-api-documentation
     """
 
-    def __init__(self, partner_code, api_key, output_format="JSON"):
+    def __init__(self, partner_code=None, api_key=None, output_format="JSON"):
         """
         Create ZoomInfo object with security keys.
         :type output_format: String
@@ -25,10 +26,12 @@ class ZoomInfo(object):
         :param output_format: Defaults to JSON - alternate option is XML. Raise error if anything else.
         """
         try:
-            if output_format in ["JSON", "XML"]:
+            if output_format in ["JSON", "XML"] and partner_code != None and api_key != None:
                 self.output_format = output_format
                 self.partner_code = partner_code
                 self.api_key = api_key
+            elif partner_code != None or api_key != None:
+                raise ValueError("Please enter partner_code and api_key parameters to connect to ZoomInfo.")
             else:
                 raise ValueError("{} is not a valid format. Please use JSON or XML (default is JSON and required if "
                                  "using the partner sfdc_update package.".format(output_format))
@@ -77,8 +80,11 @@ class ZoomInfo(object):
               "&outputType={2}&queryTypeOptions=people_search_query,person_detail,person_match," \
               "company_search_query,company_detail,company_match". \
             format(self.partner_code, hashed_key, self.output_format)
-        r = requests.get(url)
-        return r.json()
+        try:
+            r = requests.get(url)
+            return r.json()
+        except:
+            logging.error("Failed to get usage information. Check partner code and api key.")
 
     def create_hash(self, search_params):
         """
@@ -108,13 +114,12 @@ class ZoomInfo(object):
         :return:
         """
         hashed_key = self.create_hash(search_params)
-        if __name__ == "__main__":
-            if search_type == "company":
-                return "http://partnerapi.zoominfo.com/partnerapi/company/{4}?CompanyDomain={0}&pc={1}&key={2}" \
-                       "&outputType={3}&outputFieldOptions=companyRevenueNumeric,companyTopLevelIndustry".format(
-                        search_params, self.partner_code, hashed_key, self.output_format, search)
-            elif search_type == "person":
-                return "http://partnerapi.zoominfo.com/partnerapi/person/{4}?name={0}&pc={1}&key={2}&outputType={3}".format(
+        if search_type == "company":
+            return "http://partnerapi.zoominfo.com/partnerapi/company/{4}?CompanyDomain={0}&pc={1}&key={2}" \
+                   "&outputType={3}&outputFieldOptions=companyRevenueNumeric,companyTopLevelIndustry".format(
                     search_params, self.partner_code, hashed_key, self.output_format, search)
-                # TODO Add conditionals for each ZoomInfo endpoint
-                # TODO Modify to include the option to use cid instead of domain
+        elif search_type == "person":
+            return "http://partnerapi.zoominfo.com/partnerapi/person/{4}?name={0}&pc={1}&key={2}&outputType={3}".format(
+                search_params, self.partner_code, hashed_key, self.output_format, search)
+            # TODO Add conditionals for each ZoomInfo endpoint
+            # TODO Modify to include the option to use cid instead of domain
