@@ -1,0 +1,1 @@
+A simple interface for the ZoomInfo Partner API, with an accompanying implementation of simple-salesforce. Eventually will be expanded to allow for more more flexible use cases - for now the processing maps back to fields in a specific salesforce.com instance. For the moment, update the dictionary in field_mapping.py to reflect your correct fields.
