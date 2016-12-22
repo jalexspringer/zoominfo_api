@@ -2,6 +2,7 @@
 
 import json
 import logging
+import datetime as dt
 
 from simple_salesforce import Salesforce
 from pprint import pprint
@@ -29,9 +30,9 @@ def get_zoom_accounts(sf, zoom):
     pprint(results)
     """
     # Testing JSON strings grabbed from ZoomInfo Testing Tool
-    with open("ticketmaster") as f:
+    with open("sample_data/ticketmaster") as f:
         results["0010L00001k4A86QAE"] = json.loads(f.read())["CompanyDetailRequest"]
-    with open("dicks") as f:
+    with open("sample_data/dicks") as f:
         results["0010L00001k4A8GQAU"] = json.loads(f.read())["CompanyDetailRequest"]
     return convert_to_sfdc_fields(results)
 
@@ -52,9 +53,9 @@ def get_zoom_contacts(sf, zoom):
     pprint(results)
     """
     # Testing JSON strings grabbed from ZoomInfo Testing Tool
-    with open("alex") as f:
+    with open("sample_data/alex") as f:
         results["0030L00001lmodWQAQ"] = json.loads(f.read())["PersonDetailRequest"]
-    with open("elon") as f:
+    with open("sample_data/elon") as f:
         results["0030L00001lmpYCQAY"] = json.loads(f.read())["PersonDetailRequest"]
     return convert_to_sfdc_fields(results, update_type="contact")
 
@@ -80,6 +81,7 @@ def get_sfdc_fields(sf):
 
 
 if __name__ == "__main__":
+    log_file = "logs/update-{}".format(dt.datetime.utcnow().strftime())
     logging.basicConfig(filename='ZoomInfoCalls.log', format='%(asctime)s %(message)s', level=logging.INFO)
     # Initialize SF and zoom instances
     SF = Salesforce(username=SFUN, password=SFPWD, security_token=SFTKN, client_id="Sales_Bot")
