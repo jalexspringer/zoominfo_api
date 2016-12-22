@@ -25,13 +25,14 @@ def sfdc_object_query(sf, query, type="account"):
     return fields, ids
 
 
-def convert_to_sfdc_fields(results):
+def convert_to_sfdc_fields(results, type="account"):
     """
     Use the dictionary "field_mapping" to convert ZoomInfo responses to corresponding salesforce.com fields.
     Preparation for salesforce.com update.
     :param results: Dictionary of results from ZoomInfo calls
     :return:
     """
+    # TODO Fix labels for Industry - make list into string
     from field_mapping import field_mapping
     for k, v in results.items():
         for key, value in v["CompanyAddress"].items():
@@ -41,5 +42,23 @@ def convert_to_sfdc_fields(results):
         new_dict[k] = {}
         for key, value in v.items():
             if key in field_mapping:
+                if isinstance(value, list):
+                    value = ", ".join(value)
                 new_dict[k][field_mapping[key]] = value
+        new_dict[k]['Approved_for_Zoominfo_Append__c'] = False
+        if type == "account":
+            new_dict[k]['Account_Appended__c'] = True
+        elif type == "contact_append":
+            new_dict[k]['Contacts_Appended__c'] = True
+
     return new_dict
+
+
+def convert_revenue(money):
+    if money.endswith("Million"):
+        money = float(money[1:].split(" ")[0]) * 1000000
+    elif money.endswith("Billion"):
+        money = float(money[1:].split(" ")[0]) * 1000000000
+    else:
+        money = 0
+    return int(money)

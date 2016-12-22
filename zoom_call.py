@@ -44,7 +44,7 @@ class ZoomInfo(object):
         # TODO Add XML formatting option
         # TODO Add additional endpoint methods
         # TODO Create search options (email, name, etc.) Use dictionary to define this.
-        url = self.construct_url(search_params, search, type="company")
+        url = self.construct_url(search_params, search, search_type="company")
         r = requests.get(url)
         return r.json()
 
@@ -57,7 +57,7 @@ class ZoomInfo(object):
         # TODO Add XML formatting option
         # TODO Add additional endpoint methods
         # TODO Create search options (email, name, etc.) Use dictionary to define this.
-        url = self.construct_url(search_params, search, type="person")
+        url = self.construct_url(search_params, search, search_type="person")
         r = requests.get(url)
         return r.json()
 
@@ -100,19 +100,20 @@ class ZoomInfo(object):
         hashed_key = key.hexdigest()
         return hashed_key
 
-    def construct_url(self, search_params, search, type="company"):
+    def construct_url(self, search_params, search, search_type="company"):
         """
-        Bui
+        :param search: type of search - match, detail, or search
         :param search_params: Each search parameter.
-        :param type: see http://www.zoominfo.com/business/zoominfo-new-api-documentation#1.2 for query types.
+        :param search_type: see http://www.zoominfo.com/business/zoominfo-new-api-documentation#1.2 for query types.
         :return:
         """
         hashed_key = self.create_hash(search_params)
         if __name__ == "__main__":
-            if type == "company":
-                return "http://partnerapi.zoominfo.com/partnerapi/company/{4}?CompanyDomain={0}&pc={1}&key={2}&outputType={3}".format(
-                    search_params, self.partner_code, hashed_key, self.output_format, search)
-            elif type == "person":
+            if search_type == "company":
+                return "http://partnerapi.zoominfo.com/partnerapi/company/{4}?CompanyDomain={0}&pc={1}&key={2}" \
+                       "&outputType={3}&outputFieldOptions=companyRevenueNumeric,companyTopLevelIndustry".format(
+                        search_params, self.partner_code, hashed_key, self.output_format, search)
+            elif search_type == "person":
                 return "http://partnerapi.zoominfo.com/partnerapi/person/{4}?name={0}&pc={1}&key={2}&outputType={3}".format(
                     search_params, self.partner_code, hashed_key, self.output_format, search)
                 # TODO Add conditionals for each ZoomInfo endpoint

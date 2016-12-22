@@ -43,9 +43,10 @@ def get_zoom_contacts(SF):
     query = "SELECT Id, Email FROM Contact WHERE Approved_for_Zoominfo_Append__c = True"
 
 
-def update_sfdc_accounts(results):
+def update_sfdc_accounts(sf, accounts_to_update):
     """Update sfdc accounts with acquired ZoomInfo"""
-
+    for k, v in accounts_to_update.items():
+        sf.Account.update(k, v)
     response = "Accounts successfully updated."
     print(response)
 
@@ -61,4 +62,5 @@ if __name__ == "__main__":
     pprint(zoom.usage_report)
     accounts_to_update = get_zoom_accounts(SF)
     pprint(accounts_to_update)
+    update_sfdc_accounts(SF, accounts_to_update)
     # contacts_to_update = get_zoom_contacts(SF)
