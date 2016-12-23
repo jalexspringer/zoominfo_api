@@ -3,7 +3,7 @@
 import logging
 import json
 
-def sfdc_object_query(sf, query, type="account"):
+def sfdc_object_query(sf, query, update_type="account"):
     """
     Runs specified SOQL query, parses output. Prints a list of accounts to be processed.
     :param query: SOQL query, tailored to pull the list of accounts or contacts that should be run through ZoomInfo
@@ -15,8 +15,10 @@ def sfdc_object_query(sf, query, type="account"):
     fields = []
     ids = []
     return_field = "Website"
-    if type == "contact":
+    if update_type == "contact":
         return_field = "Email"
+    elif update_type == "new_contacts":
+        return_field = "Name"
     for record in objects_to_run['records']:
         if record[return_field] is not None:
             ids.append(record['Id'])
@@ -24,7 +26,7 @@ def sfdc_object_query(sf, query, type="account"):
     account_string = ""
     for account in fields:
         account_string += account + "\n"
-    response = "Processing account list. Updating the following {}:\n{}".format(type, account_string)
+    response = "Processing account list. Updating the following {}:\n{}".format(update_type, account_string)
     print(response)
     return fields, ids
 
@@ -60,6 +62,8 @@ def convert_to_sfdc_fields(results, update_type="account"):
             except:
                 logging.error(json.dumps(results[k]))
                 print("ERROR LOGGED")
+    elif update_type == "new_contact_search":
+        new_dict = {}
     return new_dict
 
 

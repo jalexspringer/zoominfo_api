@@ -60,7 +60,10 @@ class ZoomInfo(object):
         # TODO Add XML formatting option
         # TODO Add additional endpoint methods
         # TODO Create search options (email, name, etc.) Use dictionary to define this.
-        url = self.construct_url(search_params, search, search_type="person")
+        if search == "detail":
+            url = self.construct_url(search_params, search, search_type="person")
+        elif search == "search":
+            url = self.construct_url(search_params, search, search_type="people")
         r = requests.get(url)
         return r.json()
 
@@ -119,6 +122,9 @@ class ZoomInfo(object):
                    "&outputType={3}&outputFieldOptions=companyRevenueNumeric,companyTopLevelIndustry".format(
                     search_params, self.partner_code, hashed_key, self.output_format, search)
         elif search_type == "person":
+            return "http://partnerapi.zoominfo.com/partnerapi/person/{4}?name={0}&pc={1}&key={2}&outputType={3}".format(
+                search_params, self.partner_code, hashed_key, self.output_format, search)
+        elif search_type == "people":
             return "http://partnerapi.zoominfo.com/partnerapi/person/{4}?name={0}&pc={1}&key={2}&outputType={3}".format(
                 search_params, self.partner_code, hashed_key, self.output_format, search)
             # TODO Add conditionals for each ZoomInfo endpoint

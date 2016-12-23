@@ -43,7 +43,7 @@ def get_zoom_contacts(sf, zoom):
     """
     query = "SELECT Id, Email, Name FROM Contact WHERE Approved_for_Zoominfo_Append__c = True AND " \
             "ZoomInfo_Appended__c = NULL "
-    emails, ids = sfdc_object_query(sf, query, type="contact")
+    emails, ids = sfdc_object_query(sf, query, update_type="contact")
     logging.info("Contacts to be run: %s", str(len(emails)))
 
     results = {}
@@ -58,6 +58,20 @@ def get_zoom_contacts(sf, zoom):
     with open("sample_data/elon") as f:
         results["0030L00001lmpYCQAY"] = json.loads(f.read())["PersonDetailRequest"]
     return convert_to_sfdc_fields(results, update_type="contact")
+
+
+def get_new_zoom_contacts(sf, zoom):
+    query = "SELECT Name, Id FROM Account WHERE Zoom_Contacts_Request__c = True AND Contacts_Appended__c = Null"
+    # dead_list = "SELECT Name, Email FROM Contact WHERE Account = '{}'".format(account)
+    accounts, ids = sfdc_object_query(sf, query, update_type="new_contacts")
+    logging.info("Accounts to search for new contacts: %s", str(len(accounts)))
+
+    results = {}
+    """
+    for idx, account in enumerate(accounts):
+        results[ids[idx]] = zoom.person_search(account, search_type="search")
+    pprint(results)
+    """
 
 
 def update_sfdc(sf, objects_to_update, object_type):
