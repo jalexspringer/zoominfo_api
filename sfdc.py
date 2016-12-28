@@ -11,7 +11,6 @@ def sfdc_object_query(sf, query, update_type="account"):
     :return: Object Ids and either domains (account level), or emails (contact level)
     """
     objects_to_run = sf.query_all(query)
-    print(objects_to_run)
     fields = []
     ids = []
     return_field = "Website"

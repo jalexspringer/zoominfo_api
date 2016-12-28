@@ -10,14 +10,14 @@ from pprint import pprint
 from zoom_call import ZoomInfo
 from sfdc import *
 from sec import *
+from query_dictionaries import *
 
 
-def get_zoom_accounts(sf, zoom):
+def zoom_account_query(sf, zoom):
     """
     Calls down the total of marked accounts. Queries Zoom to build results lists.
     """
     # Begin run of account queries
-    # TODO Add not in already appended to SOQL query.
     query = "SELECT Id, Name, Website FROM Account WHERE Approved_for_Zoominfo_Append__c = True AND " \
             "ZoomInfo_Appended__c = NULL "
     domains, ids = sfdc_object_query(sf, query)
@@ -26,9 +26,14 @@ def get_zoom_accounts(sf, zoom):
     results = {}
     """
     for idx, account in enumerate(domains):
-        results[ids[idx]] = zoom.company_search(account)
+        dictionary = company_detail_dictionary.copy()
+        dictionary["CompanyDomain"] = account.lstrip("www.")
+        print(dictionary)
+        results[ids[idx]] = zoom.query("company", "detail", dictionary)
     pprint(results)
     """
+
+
     # Testing JSON strings grabbed from ZoomInfo Testing Tool
     with open("sample_data/ticketmaster") as f:
         results["0010L00001k4A86QAE"] = json.loads(f.read())["CompanyDetailRequest"]
@@ -37,7 +42,7 @@ def get_zoom_accounts(sf, zoom):
     return convert_to_sfdc_fields(results)
 
 
-def get_zoom_contacts(sf, zoom):
+def zoom_contact_query(sf, zoom):
     """
     Calls down the total of marked contacts. Queries Zoom to build results lists.
     """
@@ -49,7 +54,9 @@ def get_zoom_contacts(sf, zoom):
     results = {}
     """
     for idx, email in enumerate(emails):
-        results[ids[idx]] = zoom.person_search(email)
+        dictionary = person_detail_dictionary.copy()
+        dictionary["EmailAddress"] = email
+        results[ids[idx]] = zoom.query("person", "detail", dictionary)
     pprint(results)
     """
     # Testing JSON strings grabbed from ZoomInfo Testing Tool
@@ -95,8 +102,9 @@ def get_sfdc_fields(sf):
 
 
 if __name__ == "__main__":
-    log_file = "logs/update-{}".format(dt.datetime.utcnow().strftime())
-    logging.basicConfig(filename='ZoomInfoCalls.log', format='%(asctime)s %(message)s', level=logging.INFO)
+    now = dt.datetime.utcnow().strftime("%Y%m%d_%X")
+    log_file = f"logs/{now}"
+    logging.basicConfig(filename=log_file, format='%(asctime)s %(message)s', level=logging.INFO)
     # Initialize SF and zoom instances
     SF = Salesforce(username=SFUN, password=SFPWD, security_token=SFTKN, client_id="Sales_Bot")
     zoom = ZoomInfo(ZPC, ZKEY)
@@ -105,12 +113,12 @@ if __name__ == "__main__":
     pprint(zoom.usage_report)
 
     logging.info('Started')
-    accounts_to_update = get_zoom_accounts(SF, zoom)
-    contacts_to_update = get_zoom_contacts(SF, zoom)
+    accounts_to_update = zoom_account_query(SF, zoom)
+    contacts_to_update = zoom_contact_query(SF, zoom)
     logging.info('Finished getting info from ZoomInfo')
     pprint(accounts_to_update)
     pprint(contacts_to_update)
     logging.info("Starting sfdc update")
-    update_sfdc(SF, accounts_to_update, object_type="account")
-    update_sfdc(SF, contacts_to_update, object_type="contact")
+    # update_sfdc(SF, accounts_to_update, object_type="account")
+    # update_sfdc(SF, contacts_to_update, object_type="contact")
     logging.info("Success")
