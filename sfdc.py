@@ -2,6 +2,8 @@
 
 import logging
 import json
+import datetime as dt
+from pprint import pprint
 
 def sfdc_object_query(sf, query, update_type="account"):
     """
@@ -17,7 +19,7 @@ def sfdc_object_query(sf, query, update_type="account"):
     if update_type == "contact":
         return_field = "Email"
     elif update_type == "new_contacts":
-        return_field = "Name"
+        return_field = "Website"
     for record in objects_to_run['records']:
         if record[return_field] is not None:
             ids.append(record['Id'])
@@ -43,8 +45,9 @@ def convert_to_sfdc_fields(results, update_type="account"):
     if update_type == "account":
         for k, v in results.items():
             try:
-                for key, value in v["CompanyAddress"].items():
+                for key, value in v["CompanyDetailRequest"]["CompanyAddress"].items():
                     results[k][key] = value
+                results[k].update(v["CompanyDetailRequest"])
                 new_dict = field_map(results, update_type)
             except:
                 logging.error(json.dumps(results[k]))
@@ -52,23 +55,46 @@ def convert_to_sfdc_fields(results, update_type="account"):
     elif update_type == "contact":
         for k, v in results.items():
             try:
-                results[k]["JobTitle"] = v["CurrentEmployment"]["JobTitle"]
-                for key, value in v["CurrentEmployment"]["Company"].items():
+                pprint(results)
+                results[k]["JobTitle"] = v["PersonDetailRequest"]["CurrentEmployment"]["JobTitle"]
+                for key, value in v["PersonDetailRequest"]["CurrentEmployment"]["Company"].items():
                     results[k][key] = value
-                for key, value in v["CurrentEmployment"]["Company"]["CompanyAddress"].items():
+                for key, value in v["PersonDetailRequest"]["CurrentEmployment"]["Company"]["CompanyAddress"].items():
                     results[k][key] = value
+                results[k].update(v["PersonDetailRequest"])
                 new_dict = field_map(results, update_type)
             except:
                 logging.error(json.dumps(results[k]))
                 print("ERROR LOGGED")
     elif update_type == "new_contact_search":
         new_dict = {}
+        for k,v in results.items():
+            try:
+                new_dict[k] = {}
+                i = 0
+                for value in v['PeopleSearchRequest']["PeopleSearchResults"]["PersonRecord"]:
+                    new_dict[k][i] = {}
+                    new_dict[k][i]["AccountID"] = k
+                    new_dict[k][i]["Title"] = value["CurrentEmployment"]["JobTitle"]
+                    new_dict[k][i]["Email"] = value["Email"]
+                    new_dict[k][i]["LastName"] = value["LastName"]
+                    new_dict[k][i]["FirstName"] = value["FirstName"]
+                    try:
+                        new_dict[k][i]["Phone"] = value["Phone"]
+                    except:
+                        new_dict[k][i]["Phone"] = None
+                    new_dict[k][i]["Zoom_Individual_ID__c"] = value["PersonID"]
+                    new_dict[k][i]["LeadSource"] = "ZoomInfo"
+                    new_dict[k][i]['ZoomInfo_Appended__c'] = dt.datetime.now().strftime('%Y-%m-%d')
+                    i += 1
+            except:
+                logging.error(json.dumps(results[k]))
+                print("ERROR LOGGED")
     return new_dict
 
 
 def field_map(results, update_type):
     import field_mapping
-    import datetime as dt
     new_dict = {}
     if update_type == "account":
         field__to_map = field_mapping.account_field_mapping
@@ -85,12 +111,3 @@ def field_map(results, update_type):
         new_dict[k]['ZoomInfo_Appended__c'] = dt.datetime.now().strftime('%Y-%m-%d')
     return new_dict
 
-
-def convert_revenue(money):
-    if money.endswith("Million"):
-        money = float(money[1:].split(" ")[0]) * 1000000
-    elif money.endswith("Billion"):
-        money = float(money[1:].split(" ")[0]) * 1000000000
-    else:
-        money = 0
-    return int(money)

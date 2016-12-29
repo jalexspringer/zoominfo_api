@@ -39,7 +39,7 @@ class ZoomInfo(object):
                 for value in ["rpp", "page", "sortBy", "sortOrder"]:
                     if value is not None:
                         self.picky = True
-            elif partner_code != None or api_key != None:
+            elif partner_code is not None or api_key is not None:
                 raise ValueError(
                     "Please enter partner_code and api_key parameters to connect to ZoomInfo.")
             else:
@@ -47,24 +47,6 @@ class ZoomInfo(object):
                                  "using the partner sfdc_update package.".format(output_format))
         except ValueError as e:
             print(e.args)
-
-
-    def query(self, entity, query_type, payload, outputFieldOptions=None):
-        url = f"http://partnerapi.zoominfo.com/partnerapi/{entity}/{query_type}"
-        payload["key"] = self.create_hash(payload)
-        if self.picky:
-            payload["sortBy"] = self.sortBy
-            payload["sortOrder"] = self.sortOrder
-            payload["rpp"] = self.rpp
-            payload["page"] = self.page
-        if outputFieldOptions is not None:
-            payload["outputFieldOptions"] = ",".join(outputFieldOptions)
-        payload["pc"] = self.partner_code
-        payload["outputType"] = self.output_format
-        r = requests.get(url, params = payload)
-        print(r.url)
-        return r.json()
-
 
 
     @property
@@ -89,6 +71,24 @@ class ZoomInfo(object):
             logging.error(
                 "Failed to get usage information. Check partner code and api key.")
 
+
+    def query(self, entity, query_type, payload, outputFieldOptions=None):
+        url = f"http://partnerapi.zoominfo.com/partnerapi/{entity}/{query_type}"
+        payload["key"] = self.create_hash(payload)
+        if self.picky:
+            payload["sortBy"] = self.sortBy
+            payload["sortOrder"] = self.sortOrder
+            payload["rpp"] = self.rpp
+            payload["page"] = self.page
+        if outputFieldOptions is not None:
+            payload["outputFieldOptions"] = ",".join(outputFieldOptions)
+        payload["pc"] = self.partner_code
+        payload["outputType"] = self.output_format
+        #r = requests.get(url, params = payload)
+        r = requests.get("http://partnerapi.zoominfo.com/partnerapi/person/search?pc=SF_ImpactRadius&key=9a2510146a4824cfca5c52f1d7da8614&titleSeniority=C_EXECUTIVES,VP_EXECUTIVES,DIRECTOR,MANAGER&titleClassification=786434,2555906,3932162,3932163,3276802&companyName=radio%20shack&industryClassification=5386,5898,5642,4106,1290&companyPastOrPresent=Current&contactRequirements=4&outputType=JSON&RPP=5")
+        return r.json()
+
+
     def create_hash(self, payload):
         """
         Helper function for url construction.
@@ -103,7 +103,6 @@ class ZoomInfo(object):
         for k,v  in payload.items():
             if v is not None:
                 params_string += v[:2]
-        print("Params = ", params_string)
         full_key = str.encode(params_string + self.api_key + date_string)
         key = hl.md5()
         key.update(full_key)
