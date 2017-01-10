@@ -1,0 +1,31 @@
+String to be encoded: C_78535050te4Cuasdfghjkl;'29122016
+
+ [('personTitle', None), ('TitleSeniority', 'C_EXECUTIVES,VP_EXECUTIVES,DIRECTOR,MANAGER'), ('titleClassification', '786434,2555906,3932162,3932163,3276802'), ('companyId', None), ('IndustryClassification', '5386,5898,5642,4106,1290'), ('RevenueClassificationMin', '5000'), ('RevenueClassificationMax', '5000000'), ('companyDomainName', 'testdick.com'), ('ValidDateMonthDist', None), ('ContactRequirements', '4'), ('companyPastOrPresent', 'Current'), ('key', '5576ad7530861855dede1b3a4266cc0a'), ('sortBy', None), ('sortOrder', None), ('rpp', None), ('page', None), ('pc', 'ImpactRadius.client'), ('outputType', 'JSON')]
+
+Pre-API-key string:
+C_78535050te4Cu
+
+http://partnerapi.zoominfo.com/partnerapi/person/search?
+
+TitleSeniority=C_EXECUTIVES%2CVP_EXECUTIVES%2CDIRECTOR%2CMANAGER&
+
+titleClassification=786434%2C2555906%2C3932162%2C3932163%2C3276802&
+
+IndustryClassification=5386%2C5898%2C5642%2C4106%2C1290&
+
+RevenueClassificationMin=5000&
+
+RevenueClassificationMax=5000000&
+
+companyDomainName=testdick.com&
+
+ContactRequirements=4&
+
+companyPastOrPresent=Current&
+
+key=5576ad7530861855dede1b3a4266cc0a&
+
+pc=ImpactRadius.client&
+
+outputType=JSON
+

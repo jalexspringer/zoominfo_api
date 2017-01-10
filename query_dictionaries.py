@@ -30,9 +30,9 @@ person_search_dictionary = OrderedDict([
     ('gender', None),
     ('companyDomainName', None),
     ('titleCertification', None),
+    ('ContactRequirements', None),
     ('companyPastOrPresent', None),
     ('ValidDateMonthDist', None),
-    ('ContactRequirements', None),
     ('EmailAddress', None)
 ])
 

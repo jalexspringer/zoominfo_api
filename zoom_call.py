@@ -6,6 +6,7 @@ import datetime as dt
 import hashlib as hl
 import logging
 
+from pprint import pprint
 import requests
 
 
@@ -84,7 +85,13 @@ class ZoomInfo(object):
             payload["outputFieldOptions"] = ",".join(outputFieldOptions)
         payload["pc"] = self.partner_code
         payload["outputType"] = self.output_format
-        #r = requests.get(url, params = payload)
+        ordered_payload = []
+        for k,v in payload.items():
+            ordered_payload.append((k,v))
+        ordered_payload = (ordered_payload[:])
+        #print("\n", ordered_payload)
+        #r = requests.get(url, params = ordered_payload)
+        #print("\n", r.url)
         r = requests.get("http://partnerapi.zoominfo.com/partnerapi/person/search?pc=SF_ImpactRadius&key=9a2510146a4824cfca5c52f1d7da8614&titleSeniority=C_EXECUTIVES,VP_EXECUTIVES,DIRECTOR,MANAGER&titleClassification=786434,2555906,3932162,3932163,3276802&companyName=radio%20shack&industryClassification=5386,5898,5642,4106,1290&companyPastOrPresent=Current&contactRequirements=4&outputType=JSON&RPP=5")
         return r.json()
 
@@ -103,7 +110,9 @@ class ZoomInfo(object):
         for k,v  in payload.items():
             if v is not None:
                 params_string += v[:2]
-        full_key = str.encode(params_string + self.api_key + date_string)
+        to_encode = params_string + self.api_key + date_string
+        print(f"String to be encoded: {to_encode}")
+        full_key = str.encode(to_encode)
         key = hl.md5()
         key.update(full_key)
         hashed_key = key.hexdigest()

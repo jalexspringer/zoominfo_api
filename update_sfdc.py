@@ -29,7 +29,7 @@ def zoom_account_query(sf, zoom):
         dictionary = company_detail_dictionary.copy()
         dictionary["CompanyDomain"] = account.lstrip("www.")
         print(dictionary)
-        #results[ids[idx]] = zoom.query("company", "detail", dictionary)
+    #    results[ids[idx]] = zoom.query("company", "detail", dictionary)
 
     # Testing JSON strings grabbed from ZoomInfo Testing Tool
     #with open("sample_data/dicks") as f:
@@ -120,8 +120,8 @@ if __name__ == "__main__":
     # Initialize SF and zoom instances
     SF = Salesforce(username=SFUN, password=SFPWD, security_token=SFTKN, client_id="Sales_Bot")
     zoom = ZoomInfo(ZPC, ZKEY)
-    pprint("Usage for account: {}".format(ZPC))
-    pprint(zoom.usage_report)
+    #pprint("Usage for account: {}".format(ZPC))
+    #pprint(zoom.usage_report)
     logging.info('Started')
     accounts_to_update = zoom_account_query(SF, zoom)
     contacts_to_update = zoom_contact_query(SF, zoom)
