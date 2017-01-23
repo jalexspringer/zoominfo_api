@@ -3,3 +3,4 @@ __py*
 .idea*
 .ipy*
 logs
+auth_issues
